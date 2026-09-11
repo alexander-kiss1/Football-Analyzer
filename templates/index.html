@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>La Liga Predictions</title>
+    <style>
+      body { font-family: sans-serif; margin: 2rem; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+      th { background: #f0f0f0; }
+      tr:nth-child(even) { background: #fafafa; }
+      tr.finished { background: #eef7ee; }
+      tr.live { background: #fff8e1; font-weight: bold; }
+      td.ok { color: #1a7a1a; font-weight: bold; }
+      td.bad { color: #b00020; font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <h1>La Liga Predictions</h1>
+    <form method="get">
+      <select name="team" onchange="this.form.submit()">
+        <option value="">All teams</option>
+        {% for t in teams %}
+        <option value="{{ t }}" {% if t == selected %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    <a href="/?refresh=1{% if selected %}&team={{ selected }}{% endif %}">Refresh</a>
+    <a href="/?refresh=1">Refresh</a>
+    <table>
+      <tr>
+        <th>MD</th><th>Home</th><th>Away</th><th>Status</th><th>Pred</th>
+        <th>H</th><th>D</th><th>A</th><th>Actual</th><th></th>
+      </tr>
+      {% for r in rows %}
+      <tr class="{{ r.row_class }}">
+        <td>{{ r.matchday }}</td>
+        <td>{{ r.home }}</td>
+        <td>{{ r.away }}</td>
+        <td>{{ r.status }}</td>
+        <td>{{ r.pred }}</td>
+        <td>{{ "%.2f"|format(r.H) }}</td>
+        <td>{{ "%.2f"|format(r.D) }}</td>
+        <td>{{ "%.2f"|format(r.A) }}</td>
+        <td>{{ r.actual }}</td>
+        <td class="{% if r.correct == '✓' %}ok{% elif r.correct == '✗' %}bad{% endif %}">{{ r.correct }}</td>
+        <td>{{ r.flag }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+  </html>
