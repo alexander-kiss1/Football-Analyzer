@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "football-predictor"
+version = "0.1.0"
+description = "Predicts La Liga game scorelines from historical results"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas",
+    "numpy",
+    "scipy",
+    "flask",
+    "requests",
+]
+
+[tool.setuptools]
+packages = ["football_predictor"]

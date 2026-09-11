@@ -9,3 +9,5 @@ __pycache__/
 data/raw
 
 /docs
+
+football_predictor.egg-info/
