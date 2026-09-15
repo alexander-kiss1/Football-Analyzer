@@ -13,6 +13,7 @@ dependencies = [
     "scipy",
     "flask",
     "requests",
+    "scikit-learn",
 ]
 
 [tool.setuptools]
