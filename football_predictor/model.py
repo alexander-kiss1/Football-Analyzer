@@ -46,6 +46,8 @@ def predict(model, home, away, max_goals = 10):
         return None
     lh = ha * R.loc[home, "home_attack"] * R.loc[away, "away_defense"]
     la = aa * R.loc[away, "away_attack"] * R.loc[home, "home_defense"]
+    if pd.isna(lh) or pd.isna(la):
+        return None
     g = score_grid(lh, la, max_goals)
     return {
         "Score": (int(round(lh)), int(round(la))),
