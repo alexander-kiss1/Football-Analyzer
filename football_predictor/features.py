@@ -38,6 +38,18 @@ def add_rest_days(team_matches):
 
     return team_matches
 
+def current_team_form(matches, window=5):
+    tm = _team_matches(matches)
+    tm = add_points(tm)
+    tm["goal_diff"] = tm["goals_for"] - tm["goals_against"]
+
+    tm["form_pts"] = tm.groupby("team")["points"].transform(
+        lambda s: s.rolling( window = window, min_periods = 1).mean())
+    tm["form_gd"] = tm.groupby("team")["goal_diff"].transform(
+        lambda s: s.rolling(window, min_periods=1).mean())
+
+    return tm.groupby(["team"]).tail(1)
+
 def build_team_features(matches, window):
     tm = _team_matches(matches)
     tm = add_points(tm)

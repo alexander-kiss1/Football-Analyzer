@@ -28,8 +28,12 @@
     <a href="/?refresh=1{% if selected %}&team={{ selected }}{% endif %}">Refresh</a>
     <table>
       <tr>
-        <th>MD</th><th>Home</th><th>Away</th><th>Status</th><th>Pred</th>
-        <th>H</th><th>D</th><th>A</th><th>Actual</th><th></th>
+        <th rowspan="2">MD</th><th rowspan="2">Home</th><th rowspan="2">Away</th><th rowspan="2">Status</th><th rowspan="2">Pred</th>
+        <th colspan="3">Poisson</th><th colspan="3">Classifier</th><th rowspan="2">Actual</th><th rowspan="2"></th><th rowspan="2"></th>
+      </tr>
+      <tr>
+        <th>H</th><th>D</th><th>A</th>
+        <th>H</th><th>D</th><th>A</th>
       </tr>
       {% for r in rows %}
       <tr class="{{ r.row_class }}">
@@ -41,6 +45,9 @@
         <td>{{ "%.2f"|format(r.H) }}</td>
         <td>{{ "%.2f"|format(r.D) }}</td>
         <td>{{ "%.2f"|format(r.A) }}</td>
+        <td>{{ "%.2f"|format(r.clf_H) }}</td>
+        <td>{{ "%.2f"|format(r.clf_D) }}</td>
+        <td>{{ "%.2f"|format(r.clf_A) }}</td>
         <td>{{ r.actual }}</td>
         <td class="{% if r.correct == '✓' %}ok{% elif r.correct == '✗' %}bad{% endif %}">{{ r.correct }}</td>
         <td>{{ r.flag }}</td>

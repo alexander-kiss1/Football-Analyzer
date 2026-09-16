@@ -3,20 +3,21 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.linear_model import LogisticRegression
 from football_predictor.evaluate import ODDS, ELO, log_loss, rps, predictions
 from football_predictor.data import load_matches
-from football_predictor.features import build_match_features
+from football_predictor.features import build_match_features, current_team_form
 from football_predictor.model import FINAL, fit_ratings
 
 FEATURES = ["home_form_pts", "home_form_gd", "home_rest_days",
             "away_form_pts","away_form_gd", "away_rest_days"]
 
-def load_training_table(window = 5):
-    matches = load_matches()
+def load_training_table(window = 5, matches = None):
+    if matches is None:
+        matches = load_matches()
     resp = build_match_features(matches, window)
 
     return resp
 
-def load_xy(window = 5):
-    m = load_training_table(window)
+def load_xy(window = 5, matches = None):
+    m = load_training_table(window, matches = matches)
 
     X = m[FEATURES]
     y = m["FTResult"]
@@ -75,4 +76,33 @@ def cross_val_poisson_predictions(window = 5, n_splits = 5):
         folds.append(fold_frame)
 
     return pd.concat(folds, axis = 0).reset_index(drop=True)
+
+def train_classifier(window=5, matches = None):
+    X, y = load_xy(window, matches = matches)
+    res = LogisticRegression(max_iter=1000)
+    res.fit(X, y)
+
+    return res
+
+def predict_classifier(res, form_table, home, away, fixture_date):
+    if home not in form_table.index or away not in form_table.index:
+        return None
+
+    home_row = form_table.loc[home]
+    away_row = form_table.loc[away]
+    home_rest_days = (fixture_date - home_row["MatchDate"]).days
+    away_rest_days = (fixture_date - away_row["MatchDate"]).days
+
+    row = pd.DataFrame([{
+        "home_form_pts": home_row["form_pts"],
+        "home_form_gd": home_row["form_gd"],
+        "home_rest_days": home_rest_days,
+        "away_form_pts": away_row["form_pts"],
+        "away_form_gd": away_row["form_gd"],
+        "away_rest_days": away_rest_days,
+    }])
+
+    proba = res.predict_proba(row)
+    return {"A": proba[0, 0], "D": proba[0, 1], "H": proba[0, 2]}
+
 
